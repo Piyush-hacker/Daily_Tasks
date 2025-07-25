@@ -1,0 +1,420 @@
+{% extends "base.html" %}
+
+{% block title %}Cloud Resource Prediction - Analyze Your Infrastructure{% endblock %}
+
+{% block body_class %}prediction-page{% endblock %}
+
+{% block content %}
+<!-- Prediction Form Section -->
+<section class="prediction-section">
+    <div class="prediction-container">
+        <div class="prediction-header">
+            <h1 class="prediction-title">Cloud Resource Analysis</h1>
+            <p class="prediction-subtitle">Enter your infrastructure metrics for AI-powered failure prediction</p>
+        </div>
+        
+        <!-- 3D Sliding Form -->
+        <div class="form-container" id="formContainer">
+            <form id="predictionForm" class="prediction-form">
+                <!-- Required Fields Section -->
+                <div class="form-section" id="requiredSection">
+                    <h3 class="section-title">
+                        <span class="section-icon">📊</span>
+                        Required Metrics
+                    </h3>
+                    
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="requested_cpu_percent" class="form-label">
+                                Requested CPU %
+                                <span class="required">*</span>
+                            </label>
+                            <input 
+                                type="number" 
+                                id="requested_cpu_percent" 
+                                name="requested_cpu_percent" 
+                                class="form-input"
+                                min="0" 
+                                max="100" 
+                                step="0.1"
+                                required
+                                placeholder="e.g., 65.5"
+                            >
+                            <div class="input-hint">Percentage of CPU requested</div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="requested_memory_percent" class="form-label">
+                                Requested Memory %
+                                <span class="required">*</span>
+                            </label>
+                            <input 
+                                type="number" 
+                                id="requested_memory_percent" 
+                                name="requested_memory_percent" 
+                                class="form-input"
+                                min="0" 
+                                max="100" 
+                                step="0.1"
+                                required
+                                placeholder="e.g., 45.2"
+                            >
+                            <div class="input-hint">Percentage of memory requested</div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="maximum_cpu_percent" class="form-label">
+                                Maximum CPU %
+                                <span class="required">*</span>
+                            </label>
+                            <input 
+                                type="number" 
+                                id="maximum_cpu_percent" 
+                                name="maximum_cpu_percent" 
+                                class="form-input"
+                                min="0" 
+                                max="100" 
+                                step="0.1"
+                                required
+                                placeholder="e.g., 85.7"
+                            >
+                            <div class="input-hint">Peak CPU usage percentage</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Optional Fields Section -->
+                <div class="form-section" id="optionalSection">
+                    <div class="section-header">
+                        <h3 class="section-title">
+                            <span class="section-icon">⚙️</span>
+                            Additional Metrics
+                        </h3>
+                        <button type="button" class="add-more-btn" id="addMoreBtn">
+                            <span class="btn-text">Add More Fields</span>
+                            <span class="btn-icon">+</span>
+                        </button>
+                    </div>
+                    
+                    <div class="form-grid" id="additionalFields" style="display: none;">
+                        <div class="form-group">
+                            <label for="maximum_memory_percent" class="form-label">Maximum Memory %</label>
+                            <input 
+                                type="number" 
+                                id="maximum_memory_percent" 
+                                name="maximum_memory_percent" 
+                                class="form-input"
+                                min="0" 
+                                max="100" 
+                                step="0.1"
+                                placeholder="e.g., 72.3"
+                            >
+                            <div class="input-hint">Peak memory usage percentage</div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="priority_level" class="form-label">Priority Level</label>
+                            <select id="priority_level" name="priority_level" class="form-input">
+                                <option value="1">1 - Highest</option>
+                                <option value="2">2 - High</option>
+                                <option value="3" selected>3 - Medium</option>
+                                <option value="4">4 - Low</option>
+                                <option value="5">5 - Lowest</option>
+                            </select>
+                            <div class="input-hint">Resource priority level</div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="assigned_memory" class="form-label">Assigned Memory (GB)</label>
+                            <input 
+                                type="number" 
+                                id="assigned_memory" 
+                                name="assigned_memory" 
+                                class="form-input"
+                                min="0" 
+                                step="0.1"
+                                placeholder="e.g., 8.5"
+                            >
+                            <div class="input-hint">Total assigned memory in GB</div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="page_cache_memory" class="form-label">Page Cache Memory (GB)</label>
+                            <input 
+                                type="number" 
+                                id="page_cache_memory" 
+                                name="page_cache_memory" 
+                                class="form-input"
+                                min="0" 
+                                step="0.1"
+                                placeholder="e.g., 2.1"
+                            >
+                            <div class="input-hint">Page cache memory usage in GB</div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="vertical_scaling" class="form-label">Vertical Scaling</label>
+                            <select id="vertical_scaling" name="vertical_scaling" class="form-input">
+                                <option value="0" selected>Disabled</option>
+                                <option value="1">Enabled</option>
+                            </select>
+                            <div class="input-hint">Whether vertical scaling is enabled</div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="total_run_time" class="form-label">Total Run Time (hours)</label>
+                            <input 
+                                type="number" 
+                                id="total_run_time" 
+                                name="total_run_time" 
+                                class="form-input"
+                                min="0" 
+                                step="0.1"
+                                placeholder="e.g., 24.5"
+                            >
+                            <div class="input-hint">Total runtime in hours</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Submit Section -->
+                <div class="form-submit-section">
+                    <button type="submit" class="predict-btn" id="predictBtn">
+                        <div class="btn-content">
+                            <span class="btn-text">Predict Resource Failure</span>
+                            <div class="water-fill" id="waterFill"></div>
+                        </div>
+                    </button>
+                </div>
+            </form>
+        </div>
+        
+        <!-- Quick Presets -->
+        <div class="presets-section">
+            <h3 class="presets-title">Quick Presets</h3>
+            <div class="presets-grid">
+                <button class="preset-btn" data-preset="low-usage">
+                    <span class="preset-icon">🟢</span>
+                    <span class="preset-label">Low Usage</span>
+                </button>
+                <button class="preset-btn" data-preset="moderate-usage">
+                    <span class="preset-icon">🟡</span>
+                    <span class="preset-label">Moderate Usage</span>
+                </button>
+                <button class="preset-btn" data-preset="high-usage">
+                    <span class="preset-icon">🔴</span>
+                    <span class="preset-label">High Usage</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    initPredictionForm();
+    initFormAnimations();
+    initPresets();
+});
+
+function initPredictionForm() {
+    const form = document.getElementById('predictionForm');
+    const addMoreBtn = document.getElementById('addMoreBtn');
+    const additionalFields = document.getElementById('additionalFields');
+    const predictBtn = document.getElementById('predictBtn');
+    
+    // Add more fields toggle
+    addMoreBtn.addEventListener('click', function() {
+        if (additionalFields.style.display === 'none') {
+            additionalFields.style.display = 'grid';
+            addMoreBtn.innerHTML = '<span class="btn-text">Hide Fields</span><span class="btn-icon">-</span>';
+            gsap.from('#additionalFields .form-group', {
+                duration: 0.5,
+                y: 20,
+                opacity: 0,
+                stagger: 0.1
+            });
+        } else {
+            additionalFields.style.display = 'none';
+            addMoreBtn.innerHTML = '<span class="btn-text">Add More Fields</span><span class="btn-icon">+</span>';
+        }
+    });
+    
+    // Form submission
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        // Start water fill animation
+        const waterFill = document.getElementById('waterFill');
+        waterFill.style.animation = 'waterFill 3s ease-in-out forwards';
+        
+        // Show loading overlay
+        document.getElementById('loadingOverlay').classList.remove('hidden');
+        
+        // Collect form data
+        const formData = new FormData(form);
+        const data = {};
+        
+        // Convert FormData to object with proper types
+        for (let [key, value] of formData.entries()) {
+            if (value === '') {
+                data[key] = 0; // Default empty values to 0
+            } else if (key === 'priority_level' || key === 'vertical_scaling') {
+                data[key] = parseInt(value);
+            } else {
+                data[key] = parseFloat(value);
+            }
+        }
+        
+        // Make prediction request
+        fetch('/api/predict', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data)
+        })
+        .then(response => response.json())
+        .then(result => {
+            // Hide loading overlay
+            document.getElementById('loadingOverlay').classList.add('hidden');
+            
+            if (result.success) {
+                // Store result in sessionStorage for results page
+                sessionStorage.setItem('predictionResult', JSON.stringify(result));
+                
+                // Redirect to results page
+                window.location.href = '/results';
+            } else {
+                alert('Prediction failed: ' + result.error);
+                // Reset water fill animation
+                waterFill.style.animation = '';
+            }
+        })
+        .catch(error => {
+            // Hide loading overlay
+            document.getElementById('loadingOverlay').classList.add('hidden');
+            console.error('Error:', error);
+            alert('An error occurred during prediction');
+            // Reset water fill animation
+            waterFill.style.animation = '';
+        });
+    });
+}
+
+function initFormAnimations() {
+    // Animate form appearance
+    gsap.from('.form-container', {
+        duration: 1,
+        y: 50,
+        opacity: 0,
+        ease: 'power3.out'
+    });
+    
+    // Animate form groups
+    gsap.from('.form-group', {
+        duration: 0.8,
+        y: 20,
+        opacity: 0,
+        stagger: 0.1,
+        delay: 0.3
+    });
+    
+    // Input focus animations
+    document.querySelectorAll('.form-input').forEach(input => {
+        input.addEventListener('focus', function() {
+            gsap.to(this.parentElement, {
+                duration: 0.3,
+                scale: 1.02,
+                ease: 'power2.out'
+            });
+        });
+        
+        input.addEventListener('blur', function() {
+            gsap.to(this.parentElement, {
+                duration: 0.3,
+                scale: 1,
+                ease: 'power2.out'
+            });
+        });
+    });
+}
+
+function initPresets() {
+    const presets = {
+        'low-usage': {
+            requested_cpu_percent: 25.0,
+            requested_memory_percent: 30.0,
+            maximum_cpu_percent: 45.0,
+            maximum_memory_percent: 50.0,
+            priority_level: 3,
+            assigned_memory: 4.0,
+            page_cache_memory: 1.0,
+            vertical_scaling: 0,
+            total_run_time: 12.0
+        },
+        'moderate-usage': {
+            requested_cpu_percent: 55.0,
+            requested_memory_percent: 60.0,
+            maximum_cpu_percent: 75.0,
+            maximum_memory_percent: 80.0,
+            priority_level: 2,
+            assigned_memory: 8.0,
+            page_cache_memory: 2.5,
+            vertical_scaling: 1,
+            total_run_time: 48.0
+        },
+        'high-usage': {
+            requested_cpu_percent: 85.0,
+            requested_memory_percent: 90.0,
+            maximum_cpu_percent: 95.0,
+            maximum_memory_percent: 98.0,
+            priority_level: 1,
+            assigned_memory: 16.0,
+            page_cache_memory: 4.0,
+            vertical_scaling: 1,
+            total_run_time: 72.0
+        }
+    };
+    
+    document.querySelectorAll('.preset-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const presetName = this.dataset.preset;
+            const presetData = presets[presetName];
+            
+            // Fill form with preset data
+            Object.keys(presetData).forEach(key => {
+                const input = document.getElementById(key);
+                if (input) {
+                    input.value = presetData[key];
+                    
+                    // Animate input change
+                    gsap.fromTo(input, {
+                        backgroundColor: '#00C2FF'
+                    }, {
+                        backgroundColor: 'transparent',
+                        duration: 1
+                    });
+                }
+            });
+            
+            // Show additional fields if not visible
+            const additionalFields = document.getElementById('additionalFields');
+            if (additionalFields.style.display === 'none') {
+                document.getElementById('addMoreBtn').click();
+            }
+            
+            // Animate preset button
+            gsap.to(this, {
+                duration: 0.2,
+                scale: 0.95,
+                yoyo: true,
+                repeat: 1
+            });
+        });
+    });
+}
+</script>
+{% endblock %}

@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block title %}Server Error - Cloud Resource Optimizer{% endblock %}
+
+{% block body_class %}error-page{% endblock %}
+
+{% block content %}
+<section class="error-section">
+    <div class="error-container">
+        <div class="error-content">
+            <div class="error-icon">⚠️</div>
+            <h1 class="error-title">500 - Server Error</h1>
+            <p class="error-message">
+                Something went wrong on our end. We're working to fix this issue.
+            </p>
+            <div class="error-actions">
+                <a href="{{ url_for('index') }}" class="action-btn primary">
+                    <span class="btn-icon">🏠</span>
+                    <span class="btn-text">Go Home</span>
+                </a>
+                <button onclick="location.reload()" class="action-btn secondary">
+                    <span class="btn-icon">🔄</span>
+                    <span class="btn-text">Try Again</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+.error-section {
+    min-height: 80vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.error-container {
+    max-width: 600px;
+    padding: 2rem;
+}
+
+.error-icon {
+    font-size: 5rem;
+    margin-bottom: 2rem;
+}
+
+.error-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    color: var(--text-light);
+}
+
+.error-message {
+    font-size: 1.1rem;
+    color: var(--text-muted);
+    margin-bottom: 2rem;
+    line-height: 1.6;
+}
+
+.error-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+</style>
+{% endblock %}

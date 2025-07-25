@@ -1,0 +1,21 @@
+{
+  "name": "Cloud Resource Optimizer",
+  "image": "mcr.microsoft.com/devcontainers/python:3.12",
+  "features": {
+    "ghcr.io/devcontainers/features/aws-cli:1": {}
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-python.python",
+        "ms-python.flake8",
+        "ms-vscode.vscode-json",
+        "formulahendry.auto-rename-tag",
+        "bradlc.vscode-tailwindcss"
+      ]
+    }
+  },
+  "forwardPorts": [5000],
+  "postCreateCommand": "pip install -r requirements.txt",
+  "remoteUser": "vscode"
+}
