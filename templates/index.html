@@ -1,0 +1,224 @@
+{% extends "base.html" %}
+
+{% block title %}Cloud Resource Optimizer - AI-Powered Resource Management{% endblock %}
+
+{% block body_class %}landing-page{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="hero-container">
+        <div class="hero-content">
+            <!-- Animated Question -->
+            <div class="animated-question" id="animatedQuestion">
+                <h1 class="question-text">Why Cloud Resource Optimizer?</h1>
+            </div>
+            
+            <!-- Animated Answer -->
+            <div class="animated-answer" id="animatedAnswer">
+                <div class="answer-content">
+                    <p class="answer-text">
+                        Predict resource failures before they happen. Our AI-powered platform analyzes your cloud infrastructure metrics and provides intelligent insights to optimize performance, reduce costs, and prevent downtime.
+                    </p>
+                    <div class="feature-highlights">
+                        <div class="feature-item">
+                            <div class="feature-icon">🚀</div>
+                            <span>Real-time Prediction</span>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-icon">📊</div>
+                            <span>Advanced Analytics</span>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-icon">☁️</div>
+                            <span>AWS Integration</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Start Button -->
+            <div class="start-button-container" id="startButtonContainer">
+                <button class="start-btn" id="startBtn">
+                    <span class="btn-text">Start Prediction</span>
+                    <div class="btn-wave"></div>
+                </button>
+            </div>
+        </div>
+        
+        <!-- 3D Background Animation -->
+        <div class="hero-3d-background" id="hero3dBackground"></div>
+    </div>
+</section>
+
+<!-- Power BI Dashboard Section -->
+<section class="dashboard-section" id="dashboard">
+    <div class="dashboard-container">
+        <div class="dashboard-header">
+            <h2 class="dashboard-title">Resource Analytics Dashboard</h2>
+            <p class="dashboard-subtitle">Real-time insights into your cloud infrastructure</p>
+        </div>
+        
+        <div class="dashboard-content">
+            {% if config.POWER_BI_EMBED_URL %}
+            <!-- Actual Power BI Embed -->
+            <iframe 
+                class="powerbi-embed"
+                src="{{ config.POWER_BI_EMBED_URL }}"
+                frameborder="0" 
+                allowFullScreen="true">
+            </iframe>
+            {% else %}
+            <!-- Mock Dashboard for Development -->
+            <div class="mock-dashboard">
+                <div class="dashboard-grid">
+                    <div class="dashboard-card">
+                        <div class="card-header">
+                            <h3>CPU Utilization</h3>
+                            <span class="status-indicator green"></span>
+                        </div>
+                        <div class="card-content">
+                            <div class="metric-value">78.5%</div>
+                            <div class="metric-trend positive">+2.3%</div>
+                        </div>
+                    </div>
+                    
+                    <div class="dashboard-card">
+                        <div class="card-header">
+                            <h3>Memory Usage</h3>
+                            <span class="status-indicator yellow"></span>
+                        </div>
+                        <div class="card-content">
+                            <div class="metric-value">65.2%</div>
+                            <div class="metric-trend negative">-1.8%</div>
+                        </div>
+                    </div>
+                    
+                    <div class="dashboard-card">
+                        <div class="card-header">
+                            <h3>Resource Health</h3>
+                            <span class="status-indicator green"></span>
+                        </div>
+                        <div class="card-content">
+                            <div class="metric-value">Optimal</div>
+                            <div class="metric-trend stable">Stable</div>
+                        </div>
+                    </div>
+                    
+                    <div class="dashboard-card">
+                        <div class="card-header">
+                            <h3>Predictions Made</h3>
+                            <span class="status-indicator blue"></span>
+                        </div>
+                        <div class="card-content">
+                            <div class="metric-value">1,247</div>
+                            <div class="metric-trend positive">+156 today</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="chart-container">
+                    <div class="chart-placeholder">
+                        <div class="chart-title">Resource Usage Over Time</div>
+                        <div class="chart-content" id="mockChart"></div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="features-section">
+    <div class="features-container">
+        <h2 class="features-title">Why Choose Our Platform?</h2>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon-large">🤖</div>
+                <h3>AI-Powered Predictions</h3>
+                <p>Machine learning models trained on millions of cloud resource patterns</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon-large">⚡</div>
+                <h3>Real-time Analysis</h3>
+                <p>Instant predictions with sub-second response times</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon-large">🔒</div>
+                <h3>Enterprise Security</h3>
+                <p>Bank-grade security with AWS IAM integration</p>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Initialize landing page animations
+document.addEventListener('DOMContentLoaded', function() {
+    initLandingPageAnimations();
+    initMockChart();
+});
+
+function initLandingPageAnimations() {
+    // Animate question appearance
+    gsap.from('.question-text', {
+        duration: 1.5,
+        y: 50,
+        opacity: 0,
+        ease: 'power3.out'
+    });
+    
+    // Animate answer appearance with delay
+    gsap.from('.answer-content', {
+        duration: 1.5,
+        y: 30,
+        opacity: 0,
+        ease: 'power3.out',
+        delay: 0.8
+    });
+    
+    // Animate feature highlights
+    gsap.from('.feature-item', {
+        duration: 1,
+        y: 20,
+        opacity: 0,
+        stagger: 0.2,
+        ease: 'power2.out',
+        delay: 1.5
+    });
+    
+    // Animate start button
+    gsap.from('.start-btn', {
+        duration: 1,
+        scale: 0.8,
+        opacity: 0,
+        ease: 'elastic.out(1, 0.75)',
+        delay: 2
+    });
+    
+    // Start button click handler
+    document.getElementById('startBtn').addEventListener('click', function() {
+        window.location.href = '{{ url_for("predict_page") }}';
+    });
+}
+
+function initMockChart() {
+    // Simple mock chart animation
+    const chartContent = document.getElementById('mockChart');
+    if (chartContent) {
+        // Create simple animated bars
+        const bars = [];
+        for (let i = 0; i < 12; i++) {
+            const bar = document.createElement('div');
+            bar.className = 'chart-bar';
+            bar.style.height = Math.random() * 80 + 20 + '%';
+            bar.style.animationDelay = i * 0.1 + 's';
+            chartContent.appendChild(bar);
+        }
+    }
+}
+</script>
+{% endblock %}

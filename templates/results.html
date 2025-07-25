@@ -1,0 +1,453 @@
+{% extends "base.html" %}
+
+{% block title %}Prediction Results - Cloud Resource Optimizer{% endblock %}
+
+{% block body_class %}results-page{% endblock %}
+
+{% block content %}
+<!-- Results Section -->
+<section class="results-section">
+    <div class="results-container">
+        <!-- Results Header -->
+        <div class="results-header">
+            <h1 class="results-title">Prediction Results</h1>
+            <p class="results-subtitle">AI-powered analysis of your cloud resource metrics</p>
+        </div>
+        
+        <!-- Main Results Card -->
+        <div class="results-main-card" id="resultsMainCard">
+            <div class="result-prediction" id="resultPrediction">
+                <div class="prediction-icon" id="predictionIcon">
+                    <div class="icon-wrapper">
+                        <span class="icon" id="resultIcon">🔄</span>
+                    </div>
+                </div>
+                <div class="prediction-text">
+                    <h2 class="prediction-status" id="predictionStatus">Analyzing...</h2>
+                    <div class="prediction-confidence">
+                        <span class="confidence-label">Confidence:</span>
+                        <span class="confidence-value" id="confidenceValue">--</span>
+                        <div class="confidence-bar">
+                            <div class="confidence-fill" id="confidenceFill"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Detailed Metrics -->
+        <div class="metrics-grid" id="metricsGrid">
+            <div class="metric-card">
+                <h3 class="metric-title">Input Analysis</h3>
+                <div class="metric-content" id="inputMetrics">
+                    <!-- Will be populated by JavaScript -->
+                </div>
+            </div>
+            
+            <div class="metric-card">
+                <h3 class="metric-title">Risk Factors</h3>
+                <div class="metric-content" id="riskFactors">
+                    <!-- Will be populated by JavaScript -->
+                </div>
+            </div>
+            
+            <div class="metric-card">
+                <h3 class="metric-title">Recommendations</h3>
+                <div class="metric-content" id="recommendations">
+                    <!-- Will be populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+        
+        <!-- Interactive Visualizations -->
+        <div class="visualizations-section">
+            <h3 class="viz-title">Resource Timeline Visualization</h3>
+            
+            <div class="timeline-controls">
+                <div class="control-group">
+                    <label for="startTime">Start Time:</label>
+                    <input type="datetime-local" id="startTime" class="time-input">
+                </div>
+                <div class="control-group">
+                    <label for="endTime">End Time:</label>
+                    <input type="datetime-local" id="endTime" class="time-input">
+                </div>
+                <div class="control-group">
+                    <label for="totalRunTime">Total Run Time:</label>
+                    <span id="totalRunTimeDisplay" class="time-display">--</span>
+                </div>
+            </div>
+            
+            <div class="timeline-visualization" id="timelineVisualization">
+                <div class="timeline-chart" id="timelineChart">
+                    <!-- Chart will be rendered here -->
+                </div>
+            </div>
+        </div>
+        
+        <!-- Actions -->
+        <div class="results-actions">
+            <button class="action-btn secondary" id="newPredictionBtn">
+                <span class="btn-icon">🔄</span>
+                <span class="btn-text">New Prediction</span>
+            </button>
+            <button class="action-btn primary" id="downloadReportBtn">
+                <span class="btn-icon">📊</span>
+                <span class="btn-text">Download Report</span>
+            </button>
+            <button class="action-btn tertiary" id="shareResultsBtn">
+                <span class="btn-icon">📤</span>
+                <span class="btn-text">Share Results</span>
+            </button>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    loadPredictionResults();
+    initResultsAnimations();
+    initTimelineVisualization();
+    initActions();
+});
+
+function loadPredictionResults() {
+    // Get prediction result from sessionStorage
+    const resultData = sessionStorage.getItem('predictionResult');
+    
+    if (!resultData) {
+        // Redirect back to prediction page if no result
+        window.location.href = '/predict';
+        return;
+    }
+    
+    const result = JSON.parse(resultData);
+    displayResults(result);
+}
+
+function displayResults(result) {
+    const predictionStatus = document.getElementById('predictionStatus');
+    const predictionIcon = document.getElementById('resultIcon');
+    const confidenceValue = document.getElementById('confidenceValue');
+    const confidenceFill = document.getElementById('confidenceFill');
+    
+    // Display main prediction
+    predictionStatus.textContent = result.prediction;
+    confidenceValue.textContent = result.confidence + '%';
+    
+    // Set icon and colors based on prediction
+    if (result.prediction === 'Failed') {
+        predictionIcon.textContent = '⚠️';
+        predictionStatus.className = 'prediction-status failed';
+        confidenceFill.className = 'confidence-fill failed';
+    } else {
+        predictionIcon.textContent = '✅';
+        predictionStatus.className = 'prediction-status success';
+        confidenceFill.className = 'confidence-fill success';
+    }
+    
+    // Animate confidence bar
+    gsap.to('#confidenceFill', {
+        duration: 2,
+        width: result.confidence + '%',
+        ease: 'power2.out',
+        delay: 0.5
+    });
+    
+    // Display input metrics
+    displayInputMetrics(result.features);
+    
+    // Display risk factors
+    displayRiskFactors(result);
+    
+    // Display recommendations
+    displayRecommendations(result);
+    
+    // Set timeline data
+    setTimelineData(result.features);
+}
+
+function displayInputMetrics(features) {
+    const container = document.getElementById('inputMetrics');
+    
+    const metrics = [
+        { label: 'CPU Request', value: features.requested_cpu_percent, unit: '%' },
+        { label: 'Memory Request', value: features.requested_memory_percent, unit: '%' },
+        { label: 'Max CPU', value: features.maximum_cpu_percent, unit: '%' },
+        { label: 'Max Memory', value: features.maximum_memory_percent, unit: '%' },
+        { label: 'Priority', value: features.priority_level, unit: '' },
+        { label: 'Assigned Memory', value: features.assigned_memory, unit: 'GB' }
+    ];
+    
+    container.innerHTML = metrics.map(metric => `
+        <div class="metric-item">
+            <span class="metric-label">${metric.label}:</span>
+            <span class="metric-value">${metric.value}${metric.unit}</span>
+        </div>
+    `).join('');
+}
+
+function displayRiskFactors(result) {
+    const container = document.getElementById('riskFactors');
+    const features = result.features;
+    
+    const risks = [];
+    
+    // Analyze risk factors based on features
+    if (features.maximum_cpu_percent > 80) {
+        risks.push({ level: 'High', factor: 'CPU Usage', description: 'High maximum CPU usage detected' });
+    }
+    if (features.maximum_memory_percent > 85) {
+        risks.push({ level: 'High', factor: 'Memory Usage', description: 'High maximum memory usage detected' });
+    }
+    if (features.total_run_time > 48) {
+        risks.push({ level: 'Medium', factor: 'Runtime', description: 'Extended runtime may increase failure risk' });
+    }
+    if (features.vertical_scaling === 0 && (features.maximum_cpu_percent > 70 || features.maximum_memory_percent > 70)) {
+        risks.push({ level: 'Medium', factor: 'Scaling', description: 'Vertical scaling disabled with high usage' });
+    }
+    
+    if (risks.length === 0) {
+        risks.push({ level: 'Low', factor: 'Overall', description: 'No significant risk factors detected' });
+    }
+    
+    container.innerHTML = risks.map(risk => `
+        <div class="risk-item ${risk.level.toLowerCase()}">
+            <div class="risk-level">${risk.level}</div>
+            <div class="risk-content">
+                <div class="risk-factor">${risk.factor}</div>
+                <div class="risk-description">${risk.description}</div>
+            </div>
+        </div>
+    `).join('');
+}
+
+function displayRecommendations(result) {
+    const container = document.getElementById('recommendations');
+    const features = result.features;
+    const recommendations = [];
+    
+    // Generate recommendations based on analysis
+    if (result.prediction === 'Failed') {
+        recommendations.push({
+            icon: '🔧',
+            title: 'Immediate Action Required',
+            description: 'Review resource allocation and consider scaling up'
+        });
+        
+        if (features.maximum_cpu_percent > 80) {
+            recommendations.push({
+                icon: '🚀',
+                title: 'Increase CPU Allocation',
+                description: 'Current CPU usage is approaching limits'
+            });
+        }
+        
+        if (features.vertical_scaling === 0) {
+            recommendations.push({
+                icon: '📈',
+                title: 'Enable Auto-Scaling',
+                description: 'Vertical scaling can help handle peak loads'
+            });
+        }
+    } else {
+        recommendations.push({
+            icon: '✅',
+            title: 'Configuration Optimal',
+            description: 'Current resource allocation appears sufficient'
+        });
+        
+        recommendations.push({
+            icon: '📊',
+            title: 'Monitor Trends',
+            description: 'Continue monitoring for any changes in usage patterns'
+        });
+    }
+    
+    container.innerHTML = recommendations.map(rec => `
+        <div class="recommendation-item">
+            <div class="rec-icon">${rec.icon}</div>
+            <div class="rec-content">
+                <div class="rec-title">${rec.title}</div>
+                <div class="rec-description">${rec.description}</div>
+            </div>
+        </div>
+    `).join('');
+}
+
+function initResultsAnimations() {
+    // Animate results card
+    gsap.from('.results-main-card', {
+        duration: 1,
+        y: 50,
+        opacity: 0,
+        ease: 'power3.out'
+    });
+    
+    // Animate metrics grid
+    gsap.from('.metric-card', {
+        duration: 0.8,
+        y: 30,
+        opacity: 0,
+        stagger: 0.2,
+        delay: 0.5
+    });
+    
+    // Animate prediction icon
+    gsap.from('#predictionIcon', {
+        duration: 1,
+        scale: 0,
+        rotation: 360,
+        ease: 'elastic.out(1, 0.5)',
+        delay: 0.3
+    });
+}
+
+function initTimelineVisualization() {
+    // Set current time as default end time
+    const now = new Date();
+    const startTime = new Date(now.getTime() - 24 * 60 * 60 * 1000); // 24 hours ago
+    
+    document.getElementById('startTime').value = formatDateTimeLocal(startTime);
+    document.getElementById('endTime').value = formatDateTimeLocal(now);
+    
+    // Add event listeners for time inputs
+    document.getElementById('startTime').addEventListener('change', updateTimeline);
+    document.getElementById('endTime').addEventListener('change', updateTimeline);
+    
+    // Initial timeline render
+    updateTimeline();
+}
+
+function updateTimeline() {
+    const startTime = new Date(document.getElementById('startTime').value);
+    const endTime = new Date(document.getElementById('endTime').value);
+    const totalHours = (endTime - startTime) / (1000 * 60 * 60);
+    
+    document.getElementById('totalRunTimeDisplay').textContent = totalHours.toFixed(1) + ' hours';
+    
+    // Render simple timeline chart
+    renderTimelineChart(startTime, endTime, totalHours);
+}
+
+function renderTimelineChart(startTime, endTime, totalHours) {
+    const chartContainer = document.getElementById('timelineChart');
+    
+    // Simple timeline visualization
+    chartContainer.innerHTML = `
+        <div class="timeline-bar">
+            <div class="timeline-segment start">
+                <span class="segment-label">Start</span>
+                <span class="segment-time">${formatTime(startTime)}</span>
+            </div>
+            <div class="timeline-segment duration">
+                <span class="segment-label">Duration: ${totalHours.toFixed(1)}h</span>
+                <div class="duration-bar"></div>
+            </div>
+            <div class="timeline-segment end">
+                <span class="segment-label">End</span>
+                <span class="segment-time">${formatTime(endTime)}</span>
+            </div>
+        </div>
+    `;
+    
+    // Animate duration bar
+    gsap.from('.duration-bar', {
+        duration: 2,
+        width: 0,
+        ease: 'power2.out'
+    });
+}
+
+function setTimelineData(features) {
+    // Set total run time if available
+    if (features.total_run_time) {
+        const now = new Date();
+        const startTime = new Date(now.getTime() - features.total_run_time * 60 * 60 * 1000);
+        
+        document.getElementById('startTime').value = formatDateTimeLocal(startTime);
+        document.getElementById('endTime').value = formatDateTimeLocal(now);
+        updateTimeline();
+    }
+}
+
+function initActions() {
+    document.getElementById('newPredictionBtn').addEventListener('click', function() {
+        window.location.href = '/predict';
+    });
+    
+    document.getElementById('downloadReportBtn').addEventListener('click', function() {
+        downloadReport();
+    });
+    
+    document.getElementById('shareResultsBtn').addEventListener('click', function() {
+        shareResults();
+    });
+}
+
+function downloadReport() {
+    // Generate and download a simple report
+    const result = JSON.parse(sessionStorage.getItem('predictionResult'));
+    
+    const reportContent = `
+Cloud Resource Optimizer - Prediction Report
+===========================================
+
+Prediction: ${result.prediction}
+Confidence: ${result.confidence}%
+Generated: ${new Date().toLocaleString()}
+
+Input Metrics:
+- Requested CPU: ${result.features.requested_cpu_percent}%
+- Requested Memory: ${result.features.requested_memory_percent}%
+- Maximum CPU: ${result.features.maximum_cpu_percent}%
+- Maximum Memory: ${result.features.maximum_memory_percent}%
+- Priority Level: ${result.features.priority_level}
+- Assigned Memory: ${result.features.assigned_memory} GB
+- Page Cache Memory: ${result.features.page_cache_memory} GB
+- Vertical Scaling: ${result.features.vertical_scaling ? 'Enabled' : 'Disabled'}
+- Total Run Time: ${result.features.total_run_time} hours
+
+Recommendation:
+${result.prediction === 'Failed' ? 'Consider optimizing resource allocation and enabling auto-scaling.' : 'Current configuration appears optimal. Continue monitoring.'}
+    `;
+    
+    const blob = new Blob([reportContent], { type: 'text/plain' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `cloud-resource-report-${new Date().toISOString().split('T')[0]}.txt`;
+    a.click();
+    window.URL.revokeObjectURL(url);
+}
+
+function shareResults() {
+    const result = JSON.parse(sessionStorage.getItem('predictionResult'));
+    const shareText = `Cloud Resource Prediction: ${result.prediction} (${result.confidence}% confidence)`;
+    
+    if (navigator.share) {
+        navigator.share({
+            title: 'Cloud Resource Optimizer Results',
+            text: shareText,
+            url: window.location.href
+        });
+    } else {
+        // Fallback: copy to clipboard
+        navigator.clipboard.writeText(shareText).then(() => {
+            alert('Results copied to clipboard!');
+        });
+    }
+}
+
+// Utility functions
+function formatDateTimeLocal(date) {
+    return date.toISOString().slice(0, 16);
+}
+
+function formatTime(date) {
+    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+}
+</script>
+{% endblock %}
